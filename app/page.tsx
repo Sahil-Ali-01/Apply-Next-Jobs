@@ -13,6 +13,7 @@ export default function HomePage() {
   const [popupTimer, setPopupTimer] = useState<NodeJS.Timeout | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [user, setUser] = useState<any>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     // Check if user is logged in
@@ -36,7 +37,7 @@ export default function HomePage() {
   const toolCards = [
     {
       id: 1,
-      title: "LinkedIn Jobs",
+      title: "Job Listings Hub",
       description: "Explore thousands of job opportunities from top companies worldwide",
       icon: "💼",
       link: "https://www.linkedin.com/in/apply-next-jobs/recent-activity/all/",
@@ -156,7 +157,8 @@ export default function HomePage() {
               </div>
             </motion.div>
 
-            <nav className="flex gap-3 items-center">
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex gap-3 items-center">
               <Link href="/about" className="px-4 py-2 text-sm hover:text-blue-400 transition">
                 About
               </Link>
@@ -196,82 +198,158 @@ export default function HomePage() {
                 </>
               )}
             </nav>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 rounded-lg bg-white/10 hover:bg-white/20 transition"
+            >
+              <div className="w-6 h-5 flex flex-col justify-between">
+                <span
+                  className={`w-full h-0.5 bg-white rounded transition-all duration-300 ${
+                    mobileMenuOpen ? "rotate-45 translate-y-2" : ""
+                  }`}
+                />
+                <span
+                  className={`w-full h-0.5 bg-white rounded transition-all duration-300 ${
+                    mobileMenuOpen ? "opacity-0" : ""
+                  }`}
+                />
+                <span
+                  className={`w-full h-0.5 bg-white rounded transition-all duration-300 ${
+                    mobileMenuOpen ? "-rotate-45 -translate-y-2" : ""
+                  }`}
+                />
+              </div>
+            </button>
           </div>
+
+          {/* Mobile Menu Dropdown */}
+          <AnimatePresence>
+            {mobileMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="md:hidden mt-4 overflow-hidden"
+              >
+                <nav className="flex flex-col gap-2 backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-4">
+                  <Link
+                    href="/about"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="px-4 py-3 text-sm hover:bg-white/10 rounded-lg transition"
+                  >
+                    About
+                  </Link>
+                  <Link
+                    href="/contact"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="px-4 py-3 text-sm hover:bg-white/10 rounded-lg transition"
+                  >
+                    Contact
+                  </Link>
+
+                  {isLoggedIn ? (
+                    <>
+                      <Link
+                        href="/profile"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="px-4 py-3 rounded-lg bg-white/10 hover:bg-white/20 transition text-sm font-medium"
+                      >
+                        Profile
+                      </Link>
+                      <button
+                        onClick={() => {
+                          handleLogout();
+                          setMobileMenuOpen(false);
+                        }}
+                        className="px-4 py-3 rounded-lg bg-red-600/20 hover:bg-red-600/30 transition text-sm font-medium text-left"
+                      >
+                        Logout
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        href="/login"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="px-4 py-3 rounded-lg bg-white/10 hover:bg-white/20 transition text-sm font-medium"
+                      >
+                        Login
+                      </Link>
+                      <Link
+                        href="/register"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="px-4 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 transition text-sm font-semibold shadow-lg text-center"
+                      >
+                        Get Started
+                      </Link>
+                    </>
+                  )}
+                </nav>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative container mx-auto px-4 py-20 text-center">
+      {/* Compact Hero Section */}
+      <section className="relative container mx-auto px-4 py-12 text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.6 }}
         >
-          <div className="inline-block mb-4 px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-full text-sm text-blue-400">
+          <div className="inline-block mb-3 px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-full text-sm text-blue-400">
             ✨ Trusted by 50,000+ Job Seekers
           </div>
-          <h2 className="text-6xl md:text-7xl font-bold mb-6 leading-tight">
-            Land Your Dream Job
-            <br />
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 leading-tight px-4">
+            Land Your Dream Job{" "}
             <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
               Faster & Smarter
             </span>
           </h2>
-          <p className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Access powerful career tools, optimize your resume, ace interviews, and connect with
-            opportunities from top companies worldwide.
+          <p className="text-base md:text-lg text-gray-400 mb-6 max-w-2xl mx-auto px-4">
+            Access powerful career tools, optimize your resume, and connect with opportunities from top companies
           </p>
-          <div className="flex gap-4 justify-center">
-            <button
-              onClick={() =>
-                document.getElementById("tools")?.scrollIntoView({ behavior: "smooth" })
-              }
-              className="px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 transition font-semibold text-lg shadow-2xl shadow-blue-500/30"
-            >
-              Explore Tools →
-            </button>
-            <button className="px-8 py-4 rounded-xl bg-white/5 hover:bg-white/10 backdrop-blur-xl border border-white/10 transition font-semibold text-lg">
-              Watch Demo
-            </button>
-          </div>
-        </motion.div>
 
-        {/* Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.8 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-20 max-w-4xl mx-auto"
-        >
-          {stats.map((stat, index) => (
-            <div
-              key={index}
-              className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition"
-            >
-              <div className="text-3xl mb-2">{stat.icon}</div>
-              <div className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                {stat.value}
-              </div>
-              <div className="text-sm text-gray-400 mt-1">{stat.label}</div>
-            </div>
-          ))}
+          {/* Inline Stats - Compact & Responsive */}
+          <div className="flex flex-wrap justify-center gap-3 md:gap-6 mb-8 px-4">
+            {stats.map((stat, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: index * 0.1 }}
+                className="flex items-center gap-2 backdrop-blur-xl bg-white/5 border border-white/10 rounded-full px-3 md:px-4 py-2"
+              >
+                <span className="text-lg md:text-xl">{stat.icon}</span>
+                <div className="text-left">
+                  <div className="text-base md:text-lg font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                    {stat.value}
+                  </div>
+                  <div className="text-xs text-gray-400 hidden sm:block">{stat.label}</div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
       </section>
 
-      {/* Tool Cards */}
-      <section id="tools" className="relative container mx-auto px-4 pb-20">
-        <div className="text-center mb-12">
-          <h3 className="text-4xl font-bold mb-4">Career Tools Suite</h3>
-          <p className="text-gray-400 text-lg">Everything you need to succeed in your job search</p>
+      {/* Tool Cards - Immediately Visible */}
+      <section id="tools" className="relative container mx-auto px-4 pb-12">
+        <div className="text-center mb-8 px-4">
+          <h3 className="text-2xl sm:text-3xl font-bold mb-2">🎯 Career Tools Suite</h3>
+          <p className="text-sm md:text-base text-gray-400">Everything you need to succeed in your job search</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {toolCards.map((tool, index) => (
             <motion.div
               key={tool.id}
-              initial={{ opacity: 0, y: 50 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1, duration: 0.5 }}
+              transition={{ delay: index * 0.08, duration: 0.4 }}
               whileHover={{ y: -8 }}
               className="relative group cursor-pointer"
               onClick={() => handleCardClick(tool.link)}
@@ -280,27 +358,27 @@ export default function HomePage() {
                 className={`absolute -inset-0.5 bg-gradient-to-r ${tool.gradient} rounded-2xl blur opacity-0 group-hover:opacity-30 transition duration-500`}
               />
 
-              <div className="relative backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300 h-full">
+              <div className="relative backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-4 md:p-6 hover:bg-white/10 transition-all duration-300 h-full">
                 <div className="absolute top-4 right-4">
-                  <span className="px-3 py-1 bg-white/10 backdrop-blur-xl rounded-full text-xs font-medium border border-white/20">
+                  <span className="px-2 md:px-3 py-1 bg-white/10 backdrop-blur-xl rounded-full text-xs font-medium border border-white/20">
                     {tool.badge}
                   </span>
                 </div>
 
                 <div
-                  className={`w-16 h-16 bg-gradient-to-br ${tool.gradient} rounded-xl flex items-center justify-center text-3xl mb-4 shadow-lg`}
+                  className={`w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br ${tool.gradient} rounded-xl flex items-center justify-center text-2xl md:text-3xl mb-3 md:mb-4 shadow-lg`}
                 >
                   {tool.icon}
                 </div>
 
-                <h3 className="text-2xl font-bold mb-3">{tool.title}</h3>
-                <p className="text-gray-400 mb-6 leading-relaxed">{tool.description}</p>
+                <h3 className="text-xl md:text-2xl font-bold mb-2 md:mb-3">{tool.title}</h3>
+                <p className="text-sm md:text-base text-gray-400 mb-4 md:mb-6 leading-relaxed">{tool.description}</p>
 
                 <button
-                  className={`w-full py-3 rounded-xl bg-gradient-to-r ${tool.gradient} text-white font-semibold hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 group-hover:gap-3`}
+                  className={`w-full py-2 md:py-3 rounded-xl bg-gradient-to-r ${tool.gradient} text-white text-sm md:text-base font-semibold hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 group-hover:gap-3`}
                 >
                   Access Tool
-                  <span className="text-xl">→</span>
+                  <span className="text-lg md:text-xl">→</span>
                 </button>
               </div>
             </motion.div>
@@ -310,15 +388,15 @@ export default function HomePage() {
 
       {/* CTA Section */}
       {!isLoggedIn && (
-        <section className="relative container mx-auto px-4 pb-20">
+        <section className="relative container mx-auto px-4 py-12">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="backdrop-blur-xl bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-white/10 rounded-3xl p-12 text-center"
+            className="backdrop-blur-xl bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-white/10 rounded-3xl p-10 text-center"
           >
-            <h3 className="text-4xl font-bold mb-4">Ready to Transform Your Career?</h3>
-            <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+            <h3 className="text-3xl font-bold mb-3">Ready to Transform Your Career?</h3>
+            <p className="text-lg text-gray-300 mb-6 max-w-2xl mx-auto">
               Join thousands of professionals who landed their dream jobs using our platform
             </p>
             <Link
